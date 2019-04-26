@@ -16,11 +16,7 @@ public class dateWindowForKYCSignup {
         LocalDate       finalEndDateForSignUpWindow    = null;
         LocalDate[]     finalStartEndDateWindow        = new LocalDate[2];
 
-        //Calculating DateWindow for Signing Up the KYC Form:
-        // Using the SimpleDateFormat to get the Month and Day of the Anniversary Date (AnniversaryDateArray) + Year of the Sign Up Date
-        //Calculating the PresentYears(TodaysDateArray= SignUpYear) - Anniversary Day and Month  =    DateWindowYearAnniMonthDay
-
-
+        
         finalDateForSignUpWindow = LocalDate.of(inputDateWindowEndDate.getYear(), inputDateWindowStartDate.getMonth(), inputDateWindowStartDate.getDayOfMonth());
         finalStartDateForSignUpWindow = finalDateForSignUpWindow.minusDays(30);
         finalEndDateForSignUpWindow = finalDateForSignUpWindow.plusDays(30);
