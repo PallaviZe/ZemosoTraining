@@ -1,0 +1,27 @@
+package HealthCareKYCDateWindow.CompileCode.CompileCode;
+
+/**
+ * A Driver program for enabling display of Date Window ranges for the KYC of Gruber Healthcare customers.
+ * <p>
+ * This class facilitates KYC SignUp for upto 5 customers, and can be modified to enter dates for more customers
+ * by changing the @custNo value.
+ * <p>
+ * This class calls the DateWindow calculator for fetching the Date Range Start and End Dates for KYC Signup.
+ * <p>
+ * The DateWindow calculator returns/Displays the value of the Date Range Start Date and End Date.
+ */
+
+public class KYCSignupDateWindowDisplayDriver {
+
+    public  static void main(String[] args) throws Exception {
+
+        for (int custNo = 0; custNo < 5; custNo++) {
+            String message = " ";
+            message = DateWindowCalculator.displayDateWindow(message);
+            System.out.println(message);
+        }
+    }
+
+}
+
+

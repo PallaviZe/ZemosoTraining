@@ -1,0 +1,326 @@
+package HealthCareKYCDateWindow.CompileCode.CompileCode;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.time.chrono.ChronoLocalDate;
+
+/**
+ * The DateWindowCalculator reads the inputDates( Form Date + Signup Date) entered by the users through the scanner.
+ * <p>
+ * The class calls various methods to perform functions for splitting of inputDates received in a string, formatting
+ * the inputDates to the LocalDate format, calculating the DateWindow Range of Start Date and End Date and validating
+ * the Date Range to be valid Ranges.
+ * <p>
+ * This class returns the final values of Date Range Start and End Dates via a @message to the Driver program
+ * KYCSignupDateWindowDisplayDriver.
+ * <p>
+ * Exception messages are thrown upon entry of invalid inputDates(formDate and SignupDate).
+ * <p>
+ *  This class gets executed 5 times if the Customer entries for KYC Signup in the Driver class are 5 and returns 5
+ *  DateRange Values.
+ * <p>
+ *  @return message
+ */
+
+public class DateWindowCalculator {
+
+
+    public static String displayDateWindow(String message) throws Exception
+    {
+
+        String inputDates = null;
+        String [] inputDateArray = new String[2] ;
+        LocalDate[] startDateAndEndDatesOfDateWindow = new LocalDate[2];
+        LocalDate formattedFormDate = null;
+        LocalDate formattedSignupDate = null;
+        LocalDate anniversaryDate = null;
+        LocalDate [] formattedFormSignupDates = new LocalDate[2];
+
+//Reading Input File containing Form Date and SignUp Date for Submitting KYC form using scanner
+
+        Scanner sc = new Scanner( System.in );
+         inputDateArray =  readInputFormAndSignDate(sc);
+
+        inputDateArray = getDatesFromInputData(inputDateArray);
+
+//Gets formatted Form Date and SignUp Date in the Local Date format.
+
+        LocalDate[] formDateAndSignupDatesEntered =  getFormDateAndSignupDate(inputDateArray);
+
+        for (int dateCntr= 0; dateCntr < formattedFormSignupDates.length - 1; dateCntr ++ )
+        {
+            formattedFormDate = formDateAndSignupDatesEntered[dateCntr];
+            formattedSignupDate = formDateAndSignupDatesEntered[dateCntr+ 1];
+        }
+
+//Gets anniversaryDate in the Local Date format. This is calculated from the formDate and signupDate.
+
+        anniversaryDate= getAnniversaryDate(formattedFormDate,formattedSignupDate);
+
+//Gets the startdate and EndDate for the DateWindow in the Local Date format.
+
+        startDateAndEndDatesOfDateWindow = calculateStartAndEndDatesOfDateWindow( anniversaryDate);
+
+        String messageDisplay = "Date Ranges For KYC:" + "  StartDate: " + startDateAndEndDatesOfDateWindow[0] + " EndDate: " + startDateAndEndDatesOfDateWindow[1];
+
+//Checks if the Date Range obtained (startdate and EndDate for the DateWindow) in the Local Date format is a valid range.
+
+        message= checkForValidDateRanges(startDateAndEndDatesOfDateWindow, formattedFormDate,formattedSignupDate);
+
+//Returns the DateRange if valid or displays message in case of invalid date range and prompts user for the next entry
+
+        if (message ==  null ){
+            message = messageDisplay;}
+        else
+             if (message == "Future Date Not Possible. Date Window End Date is made equal to Signup Date")
+             {
+                  startDateAndEndDatesOfDateWindow[1] = formattedSignupDate;
+                  message = "Date Ranges For KYC:" + "  StartDate: " + startDateAndEndDatesOfDateWindow[0] + " EndDate: " + startDateAndEndDatesOfDateWindow[1];
+
+        }
+        return message;
+    }
+
+/** This method reads the input string from the Scanner.It calls the getInputDates method to split the input string
+ *  into Form Date and Signup Date.
+ *  Throws exception incase of invalid date values entered by the customer and returns the array containing formDate
+ *  signupDate.
+ *  @param sc
+ * @return inputDateArray
+ */
+
+    public static String[] readInputFormAndSignDate(Scanner sc)
+    {
+        String[] inputDateArray = null;
+        try {
+           sc = new Scanner( System.in );
+           inputDateArray = getInputDates(sc);
+       } catch (Exception e)
+            {System.out.println( e );
+            }
+        return inputDateArray;
+    }
+
+/** This method removes the newline characters and spaces from the input string read from the Scanner.
+ *  Throws exception incase of invalid date values entered by the customer and returns the array containing formDate
+ *  signupDate.
+ *  @param sc
+ * @return inputDateArray
+     */
+
+    public static String[] getInputDates(Scanner sc) throws Exception
+    {
+        String inputDate  = String.valueOf(sc.useDelimiter("\\n"));
+
+        System.out.println("Enter the Anniversary Date  " + "and" + "   Enter the SignUp Date");
+
+        String[] inputDateArray = sc.next().trim().split("\\s");
+
+        return inputDateArray;
+
+    }
+
+/**This method filters the spaces and null characters from the inputDates entered and moves seperate values for
+ * the formDate and signupDate into the inputDateArray.
+ * @param inputDateArray
+ * @return inputDateArray
+ * @throws Exception
+ */
+
+    public static String[] getDatesFromInputData(String[] inputDateArray) throws Exception
+
+    {
+        int dateCntr = 0;
+        ///Input Dates split into Anniversary Date and SignUp Date for Submitting KYC form
+
+        try {
+             inputDateArray = Arrays.stream( inputDateArray ).filter( s -> (s != null && s.length() > 0) ).toArray( String[]::new );
+        } catch (Exception e) {
+            System.out.println( e );
+        }
+        return inputDateArray;
+
+    }
+
+/**This method formats the inputDates entered(inputDateArray) for the LocalDate format.
+ * It calls the method convertToLocalDateFormat for checking if the dateformats entered by the user are valid.
+ * Throws exception in case of invalid date formats.
+ * @param inputDateArray
+ * @return formattedFormSignupDates
+ * @throws Exception
+ */
+
+    public static LocalDate[] getFormDateAndSignupDate(String[] inputDateArray) throws Exception
+
+    {
+        String formDateAndSignupDatesEntered = null;
+        LocalDate[] formattedFormSignupDates = new LocalDate[2];
+
+        try {
+
+           int arrayCntr =0 ;
+           while (arrayCntr < inputDateArray.length)
+
+            {   formDateAndSignupDatesEntered  = inputDateArray[arrayCntr];
+                formattedFormSignupDates[arrayCntr]  = convertToLocalDateFormat(formDateAndSignupDatesEntered);
+                arrayCntr = arrayCntr + 1;
+            }
+        } catch (Exception e)
+            {
+            System.out.println( e );
+            }
+
+        return  formattedFormSignupDates;
+    }
+
+/** This method checks for various date patterns entered by the user and validates if they are accepted by the
+ * Local Date format.
+ * It converts the user date pattern to the Local Date format if valid date format is entered by the user or throws
+ * error in case of invalid date pattern is used.
+ * @param formDateAndSignupDatesEntered
+ * @return formattedDate
+ * @throws Exception
+ */
+
+     public static LocalDate convertToLocalDateFormat(String formDateAndSignupDatesEntered) throws Exception
+
+     {
+
+        String[] datePatterns = {"yyyy-MM-dd",
+                 "yyyy/MM/dd",
+                 "dd/MM/yyyy",
+                 "dd-MM-yyyy",
+                 "yyyy MMM dd",
+                 "yyyy dd MMM",
+                 "dd MMM yyyy",
+                 "dd MMM yyyy"};
+
+        LocalDate formattedDate = null;
+        LocalDate anniversaryDateForSignUpWindow = null;
+        String message = " ";
+
+        for ( String patternForFormat : datePatterns)
+        {
+
+            try {
+                formattedDate = LocalDate.parse( formDateAndSignupDatesEntered, DateTimeFormatter.ofPattern( patternForFormat ) );
+
+            } catch (Exception e) {
+                message =  " ";
+            } finally { message = " ";}
+        }
+         return formattedDate;
+
+    }
+
+/**This method calcuates the anniversaryDate based on the formDate and SignupDates entered by the user.
+ * anniversaryDate = Year(SignupDate) + Month and Day of(formDate).
+ * The anniversaryDate is in the Local Date format.
+ * Throws an exception in case of invalid date values.
+ * @param formattedFormDate
+ * @param formattedSignupDate
+ * @return anniversaryDateForSignUpWindow
+ * @throws Exception
+ */
+
+    public static LocalDate getAnniversaryDate(LocalDate formattedFormDate,  LocalDate formattedSignupDate) throws Exception
+
+    {
+            LocalDate  anniversaryDateForSignUpWindow = LocalDate.of( formattedSignupDate.getYear(), formattedFormDate.getMonth(), formattedFormDate.getDayOfMonth() );
+            return anniversaryDateForSignUpWindow;
+    }
+
+/** This method adds thirty days to the anniversaryDate to get the startDate of the DateWindow/DateRange.
+ * This method substracts thirty days to the anniversaryDate to get the endDate of the DateWindow/DateRange.
+ * @param anniversaryDate
+ * @return startDateAndEndDatesOfDateWindow
+ * @throws Exception
+ */
+
+    public static LocalDate[] calculateStartAndEndDatesOfDateWindow(LocalDate anniversaryDate) throws Exception
+    {
+        LocalDate startDateOfDateWindowRange = null;
+        LocalDate endDateOfDateWindowRange   = null;
+        LocalDate[] startDateAndEndDatesOfDateWindow = new  LocalDate[2];
+
+        startDateOfDateWindowRange = anniversaryDate.minusDays( 30 );
+        endDateOfDateWindowRange   = anniversaryDate.plusDays( 30 );
+
+        startDateAndEndDatesOfDateWindow[0] = startDateOfDateWindowRange;
+        startDateAndEndDatesOfDateWindow[1] = endDateOfDateWindowRange;
+
+        return startDateAndEndDatesOfDateWindow ;
+
+    }
+
+    /** This method gets the DateWindow -start and end dates + formatted input dates( formDate and signUpDate).
+     *  This method checks for various conditions which ensures that the Date Range obtained is not a future date and
+     *  is a valid range where the formDate falls inbetween the DateRange.
+     *  Various messages are returned to the main class in case of invalid Date values causing invalid Date Ranges.
+     * @param startDateAndEndDatesOfDateWindow
+     * @param formattedFormDate
+     * @param formattedSignupDate
+     * @return message
+     * @throws Exception
+     */
+
+    public static String checkForValidDateRanges(LocalDate[] startDateAndEndDatesOfDateWindow, LocalDate formattedFormDate, LocalDate formattedSignupDate) throws Exception {
+        LocalDate startDateOfDateWindowRange = null;
+        LocalDate endDateOfDateWindowRange = null;
+        LocalDate todaysDate = LocalDate.now();
+        String message = null;
+
+        try {
+            for (int dtWindowCntr = 0; dtWindowCntr < startDateAndEndDatesOfDateWindow.length - 1; dtWindowCntr++) {
+                startDateOfDateWindowRange = startDateAndEndDatesOfDateWindow[dtWindowCntr];
+                endDateOfDateWindowRange = startDateAndEndDatesOfDateWindow[dtWindowCntr+1];
+            }
+
+        } catch (Exception e) {
+            System.out.println( e );
+        }
+
+        if ((endDateOfDateWindowRange).compareTo( (startDateOfDateWindowRange) ) == 0) {
+            message = "Invalid DateRanges: Enter valid Form Date and SignUp Date";
+        }
+
+        if (startDateOfDateWindowRange.compareTo( formattedSignupDate ) >= 0) {
+            message = "Date Window Start Date should be less than or equal to Signup Date";
+        }
+
+        if (endDateOfDateWindowRange.compareTo( formattedSignupDate ) > 0) {
+            message = "Future Date Not Possible. Date Window End Date is made equal to Signup Date";
+        }
+
+        try {
+            if (formattedSignupDate.isAfter(todaysDate) |
+                    formattedFormDate.isAfter(todaysDate) |
+                    endDateOfDateWindowRange.isAfter(todaysDate) |
+                    startDateOfDateWindowRange.isAfter(todaysDate) ) {
+                    message = "Dates Entered Cannot be greater than the Current Calendar Date";
+            }
+        } catch (Exception e) {
+            System.out.println( e );
+        }
+
+        if ((startDateOfDateWindowRange.compareTo( formattedSignupDate ) > 0)) {
+             message = "Dates Entered Cannot be greater than the Current Calendar Date";}
+            ;
+
+        return message;
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
