@@ -16,7 +16,6 @@ public class KYCDateRangeCalculator {
         LocalDate allowedEndDate = null;
         
         if (signUpAnnivThisYear.isBefore(currentDate)) {
-            
             if (signUpAnnivNextYear.minusDays(30).isBefore(currentDate)) {
                 allowedStartDate = signUpAnnivNextYear.minusDays(30);
                 allowedEndDate = currentDate;

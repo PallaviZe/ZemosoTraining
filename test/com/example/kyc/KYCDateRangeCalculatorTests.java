@@ -14,7 +14,10 @@ public class KYCDateRangeCalculatorTests {
     @ParameterizedTest(name = "Signup:{0}, Current:{1} >> Range Expected:{2}")
     @CsvSource({
             "2001-01-01, 2019-01-01, 2018-12-02:2019-01-01",
-            "2001-01-01, 2019-04-01, 2018-12-02:2019-01-31"
+            "2001-01-01, 2019-04-01, 2018-12-02:2019-01-31",
+            "2001-04-01, 2019-02-01, 2018-03-02:2018-05-01",
+            "2001-09-01, 2019-04-01, 2018-08-02:2018-10-01",
+            "2001-01-01, 2018-12-15, 2018-12-02:2018-12-15"
     })
     void checkRanges(String signup, String current, 
                      String expectedRange) {
