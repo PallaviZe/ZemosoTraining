@@ -20,12 +20,4 @@ public class DateRange {
     public LocalDate getEndDate() {
         return endDate;
     }
-
-    @Override
-    public String toString() {
-        return "DateRange{" +
-                "startDate=" + startDate +
-                ", endDate=" + endDate +
-                '}';
-    }
 }
