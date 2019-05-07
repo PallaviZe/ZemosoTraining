@@ -1,0 +1,174 @@
+package Com.HealthCareKYC.DateRanges;
+
+import java.time.LocalDate;
+
+/**
+ * KYCDateEntryRange is a class which defines the members are StartDate and EndDate in LocalDate format.
+ * <p>
+ * This class is used by the Main program DateWindowCalculator for fetching the Start Date and EndDates of the DateWindow
+ * that need to be displayed to the customers.
+ * <p>
+ * This objects in this class are instantiated by various calls and parameters that are passed through the methods from the
+ * Main program.
+ * <p>
+ * The error message checks for invalid date range checks are performed by this class by checking the values of its members
+ *.
+ */
+
+public class KYCDateEntryRange
+    {
+
+      private   LocalDate kycStartDate;
+      private   LocalDate kycEndDate;
+
+
+      public KYCDateEntryRange(LocalDate kycStartDate, LocalDate kycEndDate){
+
+            this.kycStartDate = kycStartDate;
+            this.kycEndDate = kycEndDate;
+        }
+
+        public KYCDateEntryRange()
+        {
+        }
+
+        public LocalDate getKycStartDate()
+        {
+         return  this.kycStartDate;
+        }
+
+        public LocalDate getKycEndDate()
+        {
+         return this.kycEndDate;
+        }
+
+/**This method accepts the Input Dates array entered by the customer. It calls the convertToLocalDateFormat in the
+ * DateWindowCalculator to instantiate the values of the kycStartDate and kycEndDate to convert it into the format
+ * accepted by the LocalDate for all the dates entered.
+ * In case of invalid dates or invalid formats entered this method throws an exception
+ * @param inputDateArray
+ * @return formDateAndSignUpDateEntered
+ * @throws Exception
+ */
+       KYCDateEntryRange getInputDates(String[] inputDateArray) throws Exception
+       {
+
+           KYCDateEntryRange formDateAndSignUpDateEntered = new KYCDateEntryRange();
+        try
+        {
+
+            for (int arrayCntr = 0; arrayCntr < inputDateArray.length - 1; arrayCntr++)
+            {
+                String inputDateEntered = inputDateArray[arrayCntr];
+                this.kycStartDate = DateWindowCalculator.convertToLocalDateFormat( inputDateArray[arrayCntr] );
+                inputDateEntered = inputDateArray[arrayCntr + 1];
+                this.kycEndDate = DateWindowCalculator.convertToLocalDateFormat( inputDateArray[arrayCntr + 1] );
+            }
+        } catch (Exception e)
+             {  System.out.println( e );
+             }
+        return formDateAndSignUpDateEntered;
+       }
+
+/** For all instances of the class KYCDateEntryRange, this method calculates the DateWindow StartDate.
+ * The method accepts the anniversaryDate entered by the user and deducts 30 days.
+ * Throws an exception in case of invalid dates.
+ * @param anniversaryDate
+ * @return StartDate of startDateAndEndDatesOfDateWindow
+ * @throws Exception
+ */
+
+       KYCDateEntryRange   calculateStartDateOfDateWindow(LocalDate anniversaryDate) throws Exception
+       {
+            KYCDateEntryRange startDateAndEndDatesOfDateWindow = new KYCDateEntryRange();
+        try {
+            LocalDate startDateOfDateWindowRange = anniversaryDate.minusDays( 30 );
+            kycStartDate = startDateOfDateWindowRange;
+            startDateAndEndDatesOfDateWindow.kycStartDate = kycStartDate;
+            } catch (Exception e)
+                {
+                    System.out.println( e );
+                }
+        return startDateAndEndDatesOfDateWindow;
+
+       }
+
+/** For all instances of the class KYCDateEntryRange, this method calculates the DateWindow EndDate.
+ * The method accepts the anniversaryDate entered by the user and adds 30 days.
+ * Throws an exception in case of invalid dates.
+ * @param anniversaryDate
+ * @return EndDate of startDateAndEndDatesOfDateWindow
+ * @throws Exception
+ */
+
+        KYCDateEntryRange  calculateEndDateOfDateWindow(LocalDate anniversaryDate) throws Exception
+        {
+            KYCDateEntryRange startDateAndEndDatesOfDateWindow = new KYCDateEntryRange();
+           try {
+
+               LocalDate EndDateOfDateWindowRange = anniversaryDate.plusDays( 30 );
+
+               kycEndDate = EndDateOfDateWindowRange;
+               startDateAndEndDatesOfDateWindow.kycEndDate = kycEndDate;
+           } catch (Exception e)
+           {System.out.println( e );}
+            return startDateAndEndDatesOfDateWindow;
+        }
+
+/** The below methods get the DateEntryRange -start and end dates + formatted input dates( formDate and signUpDate).
+ *  These method checks for various conditions which ensures that the Date Range obtained is not a future date and
+ *  is a valid range where the formDate falls inbetween the DateRange.
+ *  "Invalid Date message" is returned to the main class in case of invalid Date values causing invalid Date Ranges.
+ *  @return message
+ */
+
+        String checkValidDateRange()
+        {
+           String  message = "not invalid date";
+           if (kycEndDate == kycStartDate )
+              {
+                message = "invalid date";
+              }
+           return message;
+        }
+
+
+        String checkForFutureDates()
+        {
+           String  message = "not invalid date";
+           LocalDate todaysDate = LocalDate.now();
+           if (kycEndDate.isAfter( todaysDate ) |kycStartDate.isAfter( todaysDate ) )
+           {
+               message = "invalid date";
+           }
+           return message;
+        }
+
+
+        String  checkForFutureDates(LocalDate formattedFormDate, LocalDate formattedSignUpDate)
+         {
+           String  message = "not invalid date";
+           LocalDate todaysDate = LocalDate.now();
+           if (formattedFormDate.isAfter( todaysDate ) |formattedSignUpDate.isAfter( todaysDate ) )
+           {
+             message = "invalid date";
+           }
+           return message;
+         }
+
+         String checkValidFormDateSignUpDate(LocalDate formattedFormDate, LocalDate formattedSignUpDate)
+         {
+            String  message = "not invalid date";
+
+            if (kycStartDate.isAfter( formattedSignUpDate))
+            {
+                message = "invalid date";
+            }
+
+            return message;}
+      }
+
+
+
+
+
